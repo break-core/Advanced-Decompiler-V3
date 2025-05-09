@@ -385,7 +385,10 @@ local function Decompile(bytecode)
 						-- help please. if you understand
 						local byte = reader:nextSignedByte()
 
-						local delta = lastOffset + byte
+						-- line numbers unexpectedly dropped/increased by 255 (or 256?) because i set delta to just lastOffset + byte
+						-- the solution: (lastOffset + byte) & 0xFF.
+						-- shoutout to https://github.com/ActualMasterOogway/Iridium/ for finding this fix
+						local delta = bit32.band(lastOffset + byte, 0xFF)
 						smallLineInfo[i] = delta
 
 						lastOffset = delta
